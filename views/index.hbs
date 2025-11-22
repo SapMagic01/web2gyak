@@ -1,0 +1,32 @@
+<div class="text-center py-20 bg-white rounded-xl shadow-md">
+    <h1 class="text-5xl font-extrabold text-indigo-700 mb-4">Üdvözöljük a SzerencseAdat Portálon!</h1>
+    <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+        Elemezze a korábbi lottóhúzások eredményeit, statisztikáit és növelje nyerési esélyeit professzionális adatbázisunk segítségével.
+    </p>
+
+    <div class="flex justify-center gap-4">
+        <a href="/adatbazis" class="bg-indigo-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-indigo-700 transition">
+            Adatbázis Megtekintése
+        </a>
+        {{#unless user}}
+            <a href="/register" class="bg-gray-200 text-gray-800 px-6 py-3 rounded-lg font-bold hover:bg-gray-300 transition">
+                Csatlakozzon hozzánk!
+            </a>
+        {{/unless}}
+    </div>
+</div>
+
+<div class="grid md:grid-cols-3 gap-6 mt-12">
+    <div class="bg-white p-6 rounded-lg shadow hover:shadow-lg transition">
+        <h3 class="text-xl font-bold mb-2 text-indigo-600">📊 Friss Statisztikák</h3>
+        <p class="text-gray-600">Folyamatosan frissülő adatbázis a legújabb húzásokkal és nyereményekkel.</p>
+    </div>
+    <div class="bg-white p-6 rounded-lg shadow hover:shadow-lg transition">
+        <h3 class="text-xl font-bold mb-2 text-indigo-600">🔒 Biztonságos Rendszer</h3>
+        <p class="text-gray-600">Regisztrált felhasználóink számára biztonságos hozzáférést és extra funkciókat biztosítunk.</p>
+    </div>
+    <div class="bg-white p-6 rounded-lg shadow hover:shadow-lg transition">
+        <h3 class="text-xl font-bold mb-2 text-indigo-600">✉️ Kapcsolat</h3>
+        <p class="text-gray-600">Kérdése van? Írjon nekünk közvetlenül az oldalunkon keresztül!</p>
+    </div>
+</div>
