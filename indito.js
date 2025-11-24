@@ -12,7 +12,7 @@ const basePath = process.env.BASE_PATH ?? "";
 
 const app = express();
 app.locals.basePath = basePath;
-const port = 3000;
+const port = process.env.PORT;
 
 
 // 1.1 Body Parser és Static fájlok
