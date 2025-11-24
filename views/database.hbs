@@ -1,0 +1,37 @@
+<div class="bg-white p-8 rounded-xl shadow-md">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-3xl font-bold text-gray-800">Részletes Lottó Eredmények</h2>
+        <span class="text-sm text-gray-500">Forrás: 3 kapcsolt tábla (Húzás + Húzott + Nyeremény)</span>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-white border border-gray-200">
+            <thead>
+            <tr class="bg-indigo-600 text-white text-sm leading-normal">
+                <th class="py-3 px-6 text-left">Időpont</th>
+                <th class="py-3 px-6 text-center">Kihúzott Szám</th>
+                <th class="py-3 px-6 text-center">Találat</th>
+                <th class="py-3 px-6 text-right">Nyeremény</th>
+            </tr>
+            </thead>
+            <tbody class="text-gray-600 text-sm font-light">
+            {{#each huzasok}}
+                <tr class="border-b border-gray-200 hover:bg-gray-50">
+                    <td class="py-3 px-6 text-left font-bold">
+                        {{this.ev}} / {{this.het}}. hét
+                    </td>
+                    <td class="py-3 px-6 text-center text-lg text-indigo-700 font-bold">
+                        {{this.szam}}
+                    </td>
+                    <td class="py-3 px-6 text-center">
+                        {{this.talalat}} találatos
+                    </td>
+                    <td class="py-3 px-6 text-right text-green-600 font-bold">
+                        {{this.ertek}} Ft
+                    </td>
+                </tr>
+            {{/each}}
+            </tbody>
+        </table>
+    </div>
+</div>

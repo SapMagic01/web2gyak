@@ -5,10 +5,15 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const { engine } = require('express-handlebars');
 
+
+require("dotenv").config();
+const basePath = process.env.BASE_PATH ?? "";
+
+
 const app = express();
+app.locals.basePath = basePath;
 const port = 3000;
 
-// --- 1. KONFIGURÁCIÓ (FONTOS A SORREND!) ---
 
 // 1.1 Body Parser és Static fájlok
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -73,7 +78,7 @@ app.use((req, res, next) => {
 // 3.2 Védelmi funkciók
 function isAuthenticated(req, res, next) {
     if (req.session.user) return next();
-    res.redirect('/login');
+    res.redirect(basePath +'/login');
 }
 
 function isAdmin(req, res, next) {
@@ -84,12 +89,12 @@ function isAdmin(req, res, next) {
 // --- 4. ÚTVONALAK ---
 
 // Főoldal - ITT NEM LEHET 'isAuthenticated', mert akkor senki nem látja!
-app.get('/', (req, res) => {
+app.get(basePath + '/', (req, res) => {
     res.render('index', { title: 'Főoldal - SzerencseAdat Kft.' });
 });
 
 // Adatbázis menü (Mindenki láthatja)
-app.get('/adatbazis', (req, res) => {
+app.get(basePath +'/adatbazis', (req, res) => {
     const sql = `
         SELECT huzas.ev, huzas.het, huzott.szam, nyeremeny.talalat, nyeremeny.ertek 
         FROM huzas 
@@ -109,11 +114,11 @@ app.get('/adatbazis', (req, res) => {
 });
 
 // Kapcsolat
-app.get('/kapcsolat', (req, res) => {
+app.get(basePath +'/kapcsolat', (req, res) => {
     res.render('contact', { title: 'Kapcsolat' });
 });
 
-app.post('/kapcsolat', (req, res) => {
+app.post(basePath +'/kapcsolat', (req, res) => {
     const { name, email, text } = req.body;
     db.query('INSERT INTO messages (sender_name, email, message, created_at) VALUES (?, ?, ?, NOW())',
         [name, email, text], (err) => {
@@ -122,18 +127,19 @@ app.post('/kapcsolat', (req, res) => {
 });
 
 // Üzenetek (Csak belépve!)
-app.get('/uzenetek', isAuthenticated, (req, res) => {
+app.get(basePath +'/uzenetek', isAuthenticated, (req, res) => {
     db.query('SELECT * FROM messages ORDER BY created_at DESC', (err, results) => {
         const plainResults = JSON.parse(JSON.stringify(results || []));
         res.render('messages', { title: 'Üzenetek', messages: plainResults });
     });
 });
 
-// CRUD Admin (Csak Admin!)
+
+
 // -- CRUD ADMIN (Minden egy helyen) --
 
 // 1. Lista megjelenítése (Összetett lekérdezés: Húzások + Számok + Nyeremények)
-app.get('/crud', isAuthenticated, isAdmin, (req, res) => {
+app.get(basePath +'/crud', isAuthenticated, isAdmin, (req, res) => {
     // 1. Lekérjük az összes húzást
     db.query('SELECT * FROM huzas ORDER BY ev DESC, het DESC', (err, draws) => {
         if (err) return res.send("Hiba: " + err.message);
@@ -169,81 +175,80 @@ app.get('/crud', isAuthenticated, isAdmin, (req, res) => {
 });
 
 // 2. Új Húzás Hozzáadása (Év, Hét)
-app.post('/crud/add', isAuthenticated, isAdmin, (req, res) => {
+app.post(basePath +'/crud/add', isAuthenticated, isAdmin, (req, res) => {
     const { ev, het } = req.body;
     if (!ev || !het) return res.send("Hiányzó adatok!");
 
     db.query('INSERT INTO huzas (ev, het) VALUES (?, ?)', [ev, het], (err) => {
         if (err) return res.send("Mentési hiba: " + err.message);
-        res.redirect('/crud');
+        res.redirect(basePath +'/crud');
     });
 });
 
 // 3. Húzás Törlése (Cascade miatt a számok is törlődnek)
-app.get('/crud/delete/:id', isAuthenticated, isAdmin, (req, res) => {
+app.get(basePath +'/crud/delete/:id', isAuthenticated, isAdmin, (req, res) => {
     db.query('DELETE FROM huzas WHERE id = ?', [req.params.id], (err) => {
         if (err) return res.send("Hiba törlésnél: " + err.message);
-        res.redirect('/crud');
+        res.redirect(basePath +'/crud');
     });
 });
 
 // 4. ÚJ SZÁM HOZZÁADÁSA (Közvetlenül a listáról)
-app.post('/crud/add-number/:id', isAuthenticated, isAdmin, (req, res) => {
+app.post(basePath +'/crud/add-number/:id', isAuthenticated, isAdmin, (req, res) => {
     const { szam } = req.body;
     db.query('INSERT INTO huzott (huzasid, szam) VALUES (?, ?)', [req.params.id, szam], (err) => {
         if(err) console.log(err);
-        res.redirect('/crud'); // Vissza a listára
+        res.redirect(basePath +'/crud'); // Vissza a listára
     });
 });
 
 // 5. SZÁM TÖRLÉSE
-app.get('/crud/delete-number/:id', isAuthenticated, isAdmin, (req, res) => {
+app.get(basePath +'/crud/delete-number/:id', isAuthenticated, isAdmin, (req, res) => {
     db.query('DELETE FROM huzott WHERE id = ?', [req.params.id], () => {
-        res.redirect('/crud');
+        res.redirect(basePath +'/crud');
     });
 });
 
 // 6. ÚJ NYEREMÉNY HOZZÁADÁSA (Közvetlenül a listáról)
-app.post('/crud/add-prize/:id', isAuthenticated, isAdmin, (req, res) => {
+app.post(basePath +'/crud/add-prize/:id', isAuthenticated, isAdmin, (req, res) => {
     const { talalat, darab, ertek } = req.body;
     db.query('INSERT INTO nyeremeny (huzasid, talalat, darab, ertek) VALUES (?, ?, ?, ?)',
         [req.params.id, talalat, darab, ertek], (err) => {
             if(err) console.log(err);
-            res.redirect('/crud');
+            res.redirect(basePath +'/crud');
         });
 });
 
 // 7. NYEREMÉNY TÖRLÉSE
-app.get('/crud/delete-prize/:id', isAuthenticated, isAdmin, (req, res) => {
+app.get(basePath +'/crud/delete-prize/:id', isAuthenticated, isAdmin, (req, res) => {
     db.query('DELETE FROM nyeremeny WHERE id = ?', [req.params.id], () => {
-        res.redirect('/crud');
+        res.redirect(basePath +'/crud');
     });
 });
-
 // Autentikáció
-app.get('/login', (req, res) => res.render('login', { title: 'Belépés' }));
-app.post('/login', (req, res) => {
+app.get(basePath +'/login', (req, res) => res.render('login', { title: 'Belépés' }));
+app.post(basePath +'/login', (req, res) => {
     const { username, password } = req.body;
     db.query('SELECT * FROM users WHERE username = ?', [username], (err, results) => {
         if (results && results.length > 0 && results[0].password === password) {
             req.session.user = results[0];
-            res.redirect('/');
+            res.redirect(basePath +'/');
         } else {
             res.render('login', { title: 'Belépés', error: 'Hibás adatok' });
         }
     });
 });
 
-app.get('/logout', (req, res) => {
+app.get(basePath +'/logout', (req, res) => {
     req.session.destroy();
-    res.redirect('/');
+    res.redirect(basePath +'/');
 });
 
-app.get('/register', (req, res) => res.render('register', { title: 'Regisztráció' }));
-app.post('/register', (req, res) => {
+app.get(basePath +'/register', (req, res) => res.render('register', { title: 'Regisztráció' }));
+app.post(basePath +'/register', (req, res) => {
     db.query('INSERT INTO users (username, password, role) VALUES (?, ?, "visitor")',
         [req.body.username, req.body.password],
-        () => res.redirect('/login'));
+        () => res.redirect(basePath +'/login'));
 });
 
 // Szerver indítása

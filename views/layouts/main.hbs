@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+<nav class="bg-blue-600 text-white p-4 shadow-md">
+    <div class="container mx-auto flex justify-between items-center">
+        <a href="{{basePath}}/" class="text-2xl font-bold">SzerencseAdat Kft.</a>
+        <ul class="flex space-x-6">
+            <li><a href="{{basePath}}/" class="hover:text-gray-200">Főoldal</a></li>
+            <li><a href="{{basePath}}/adatbazis" class="hover:text-gray-200">Adatbázis</a></li>
+            <li><a href="{{basePath}}/kapcsolat" class="hover:text-gray-200">Kapcsolat</a></li>
+
+            {{#if user}}
+                <li><a href="{{basePath}}/uzenetek" class="hover:text-gray-200">Üzenetek</a></li>
+
+                {{#if (eq user.role 'admin')}}
+                    <li><a href="{{basePath}}/crud" class="text-yellow-300 font-bold">ADMIN (CRUD)</a></li>
+                {{/if}}
+
+                <li><span class="text-sm opacity-75">Szia, {{user.username}}!</span></li>
+                <li><a href="{{basePath}}/logout" class="bg-red-500 px-3 py-1 rounded hover:bg-red-600">Kilépés</a></li>
+            {{else}}
+                <li><a href="{{basePath}}/login" class="hover:text-gray-200">Belépés</a></li>
+                <li><a href="{{basePath}}/register" class="hover:text-gray-200">Regisztráció</a></li>
+            {{/if}}
+        </ul>
+    </div>
+</nav>
+
+<main class="container mx-auto p-6 flex-grow">
+    {{{body}}}
+</main>
+
+<footer class="bg-gray-800 text-white text-center p-4 mt-auto">
+    <p>&copy; 2024 SzerencseAdat Kft. - Beadandó feladat</p>
+</footer>
+
+</body>
+</html>

@@ -5,11 +5,11 @@
     </p>
 
     <div class="flex justify-center gap-4">
-        <a href="/adatbazis" class="bg-indigo-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-indigo-700 transition">
+        <a href="{{basePath}}/adatbazis" class="bg-indigo-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-indigo-700 transition">
             Adatbázis Megtekintése
         </a>
         {{#unless user}}
-            <a href="/register" class="bg-gray-200 text-gray-800 px-6 py-3 rounded-lg font-bold hover:bg-gray-300 transition">
+            <a href="{{basePath}}/register" class="bg-gray-200 text-gray-800 px-6 py-3 rounded-lg font-bold hover:bg-gray-300 transition">
                 Csatlakozzon hozzánk!
             </a>
         {{/unless}}
